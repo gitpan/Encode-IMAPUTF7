@@ -6,7 +6,7 @@ use strict;
 no warnings 'redefine';
 use base qw(Encode::Encoding);
 __PACKAGE__->Define('IMAP-UTF-7', 'imap-utf-7');
-our $VERSION = '1.00';
+our $VERSION = '1.00_01';
 use MIME::Base64;
 use Encode;
 
@@ -36,7 +36,8 @@ sub encode($$;$){
 	    if ($1 eq "&"){
 		$bytes .= "&-";
 	    }else{
-		my $base64 = encode_base64($e_utf16->encode($1), '');
+        my $s = $1;
+		my $base64 = encode_base64($e_utf16->encode($s), '');
 		$base64 =~ s/=+$//;
                 $base64 =~ s/\//,/g;
 		$bytes .= "&$base64-";
@@ -49,10 +50,11 @@ sub encode($$;$){
     return $bytes;
 }
 
-sub decode{
+sub decode($$;$){
     my ($obj, $bytes, $chk) = @_;
     my $len = length($bytes);
     my $str = "";
+    pos($bytes) = 0;
     while (pos($bytes) < $len) {
 	if    ($bytes =~ /\G([^&]+)/ogc) {
 	    $str .= $1;

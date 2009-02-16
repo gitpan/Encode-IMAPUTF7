@@ -1,6 +1,11 @@
 # $Id: 0-test.t,v 1.2 2005/09/27 14:01:49 sava Exp $
 
-use Test::More tests => 1;
+use strict;
+use warnings;
+
+use Test::More tests => 2;
+use Test::NoWarnings;
+
 use Encode::IMAPUTF7 qw(encode decode);
 
 use File::Spec;

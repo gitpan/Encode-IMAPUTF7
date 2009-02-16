@@ -1,5 +1,9 @@
 Revision history for Perl extension Encode::IMAPUTF7.
 
+1.00_01 2009-02-16
+    Silence warnings from decode() (rt: #36180)
+    Make it work with perl 5.10 (rt: #40827)
+
 1.00  Wed Sep 28 2005
       original version
 

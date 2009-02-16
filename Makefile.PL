@@ -8,4 +8,7 @@ WriteMakefile(
     ($] >= 5.005 ?
       (ABSTRACT_FROM  => 'lib/Encode/IMAPUTF7.pm',
        AUTHOR         => 'Sava Chankov <sava@cpan.org>') : ()),
+    PREREQ_PM      => {
+        'Test::NoWarnings' => 0,
+    }
 );
