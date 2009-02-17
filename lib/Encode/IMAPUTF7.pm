@@ -6,7 +6,7 @@ use strict;
 no warnings 'redefine';
 use base qw(Encode::Encoding);
 __PACKAGE__->Define('IMAP-UTF-7', 'imap-utf-7');
-our $VERSION = '1.00_01';
+our $VERSION = '1.01';
 use MIME::Base64;
 use Encode;
 
@@ -162,12 +162,18 @@ Please check to see if your bug has already been reported.
 
 =head1 COPYRIGHT
 
-Copyright 2005
+Copyright 2005 Sava Chankov
 
 Sava Chankov, sava@cpan.org
 
 This software may be freely copied and distributed under the same
 terms and conditions as Perl.
+
+=head1 AUTHORS
+
+Peter Makholm E<lt>peter@makholm.netE<gt>, current maintainer
+
+Sava Chankov E<lt>sava@cpan.orgE<gt>, original author
 
 =head1 SEE ALSO
 

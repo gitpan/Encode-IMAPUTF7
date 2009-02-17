@@ -7,8 +7,9 @@ WriteMakefile(
     'dist'          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     ($] >= 5.005 ?
       (ABSTRACT_FROM  => 'lib/Encode/IMAPUTF7.pm',
-       AUTHOR         => 'Sava Chankov <sava@cpan.org>') : ()),
+       AUTHOR         => 'Peter Makholm <peter@makholm.net>') : ()),
     PREREQ_PM      => {
+        'Encode'           => 0,  # In core since 5.7.3
         'Test::NoWarnings' => 0,
     }
 );
