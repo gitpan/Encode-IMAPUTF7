@@ -6,7 +6,7 @@ use strict;
 no warnings 'redefine';
 use base qw(Encode::Encoding);
 __PACKAGE__->Define('IMAP-UTF-7', 'imap-utf-7');
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 use MIME::Base64;
 use Encode;
 
@@ -15,63 +15,61 @@ use Encode;
 # Code directly borrowed from Encode::Unicode::UTF7 by Dan Kogai
 #
 
-my $specials =   quotemeta "!\"#$%'()*+,-./:;<=>?@[\\]^_`{|}~";
-# \s will not work because it matches U+3000 DEOGRAPHIC SPACE
-# We use qr/[\n\r\t\ ] instead 
-my $re_asis =     qr/(?:[\n\r\t\ A-Za-z0-9$specials])/;
-my $re_encoded = qr/(?:[^\n\r\t\ A-Za-z0-9$specials])/;
+# Directly from the definition in RFC2060:
+# Ampersand (\x26) is represented as a special case
+my $re_asis =     qr/(?:[\x20-\x25\x27-\x7e])/; # printable US-ASCII except "&" represents itself
+my $re_encoded = qr/(?:[^\x20-\x25\x27-\x7e])/; # Everything else are represented by modified base64
+
 my $e_utf16 = find_encoding("UTF-16BE");
 
 sub needs_lines { 1 };
 
-sub encode($$;$){
-    my ($obj, $str, $chk) = @_;
+sub encode($$;$) {
+    my ( $obj, $str, $chk ) = @_;
     my $len = length($str);
     pos($str) = 0;
     my $bytes = '';
-    while (pos($str) < $len){
-	if    ($str =~ /\G($re_asis+)/ogc){
-	    $bytes .= $1;
-	}elsif($str =~ /\G($re_encoded+)/ogsc){
-	    if ($1 eq "&"){
-		$bytes .= "&-";
-	    }else{
-        my $s = $1;
-		my $base64 = encode_base64($e_utf16->encode($s), '');
-		$base64 =~ s/=+$//;
-                $base64 =~ s/\//,/g;
-		$bytes .= "&$base64-";
-	    }
-	}else{
-	    die "This should not happen! (pos=" . pos($str) . ")";
-	}
+    while ( pos($str) < $len ) {
+        if ( $str =~ /\G($re_asis+)/ogc ) {
+            $bytes .= $1;
+        } elsif ( $str =~ /\G&/ogc ) {
+            $bytes .= "&_";
+        } elsif ( $str =~ /\G($re_encoded+)/ogsc ) {
+            my $s = $1;
+            my $base64 = encode_base64( $e_utf16->encode($s), '' );
+            $base64 =~ s/=+$//;
+            $base64 =~ s/\//,/g;
+            $bytes .= "&$base64-";
+        } else {
+            die "This should not happen! (pos=" . pos($str) . ")";
+        }
     }
     $_[1] = '' if $chk;
     return $bytes;
 }
 
-sub decode($$;$){
-    my ($obj, $bytes, $chk) = @_;
+sub decode($$;$) {
+    my ( $obj, $bytes, $chk ) = @_;
     my $len = length($bytes);
     my $str = "";
     pos($bytes) = 0;
-    while (pos($bytes) < $len) {
-	if    ($bytes =~ /\G([^&]+)/ogc) {
-	    $str .= $1;
-	}elsif($bytes =~ /\G\&-/ogc) {
-	    $str .= "&";
-	}elsif($bytes =~ /\G\&([A-Za-z0-9+,]+)-?/ogsc) {	
-	    my $base64 = $1;
-	    $base64 =~ s/,/\//g;
-	    my $pad = length($base64) % 4;
-	    $base64 .= "=" x (4 - $pad) if $pad;
-	    $str .= $e_utf16->decode(decode_base64($base64));
-	}elsif($bytes =~ /\G\+/ogc) {
-	    $^W and warn "Bad UTF7 data escape";
-	    $str .= "+";
-	}else{
-	    die "This should not happen " . pos($bytes);
-	}
+    while ( pos($bytes) < $len ) {
+        if ( $bytes =~ /\G([^&]+)/ogc ) {
+            $str .= $1;
+        } elsif ( $bytes =~ /\G\&-/ogc ) {
+            $str .= "&";
+        } elsif ( $bytes =~ /\G\&([A-Za-z0-9+,]+)-?/ogsc ) {
+            my $base64 = $1;
+            $base64 =~ s/,/\//g;
+            my $pad = length($base64) % 4;
+            $base64 .= "=" x ( 4 - $pad ) if $pad;
+            $str .= $e_utf16->decode( decode_base64($base64) );
+        } elsif ( $bytes =~ /\G\+/ogc ) {
+            $^W and warn "Bad UTF7 data escape";
+            $str .= "+";
+        } else {
+            die "This should not happen " . pos($bytes);
+        }
     }
     $_[1] = '' if $chk;
     return $str;
