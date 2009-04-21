@@ -1,4 +1,4 @@
-# $Id: 0-test.t,v 1.2 2005/09/27 14:01:49 sava Exp $
+# $Id: 0-test.t 3398 2009-04-21 13:18:16Z makholm $
 
 use strict;
 use warnings;

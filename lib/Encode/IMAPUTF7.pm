@@ -1,12 +1,12 @@
 #
-# $Id$
+# $Id: IMAPUTF7.pm 3398 2009-04-21 13:18:16Z makholm $
 #
 package Encode::IMAPUTF7;
 use strict;
 no warnings 'redefine';
 use base qw(Encode::Encoding);
 __PACKAGE__->Define('IMAP-UTF-7', 'imap-utf-7');
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 use MIME::Base64;
 use Encode;
 
@@ -18,7 +18,7 @@ use Encode;
 # Directly from the definition in RFC2060:
 # Ampersand (\x26) is represented as a special case
 my $re_asis =     qr/(?:[\x20-\x25\x27-\x7e])/; # printable US-ASCII except "&" represents itself
-my $re_encoded = qr/(?:[^\x20-\x25\x27-\x7e])/; # Everything else are represented by modified base64
+my $re_encoded = qr/(?:[^\x20-\x7e])/; # Everything else are represented by modified base64
 
 my $e_utf16 = find_encoding("UTF-16BE");
 
@@ -33,7 +33,7 @@ sub encode($$;$) {
         if ( $str =~ /\G($re_asis+)/ogc ) {
             $bytes .= $1;
         } elsif ( $str =~ /\G&/ogc ) {
-            $bytes .= "&_";
+            $bytes .= "&-";
         } elsif ( $str =~ /\G($re_encoded+)/ogsc ) {
             my $s = $1;
             my $base64 = encode_base64( $e_utf16->encode($s), '' );

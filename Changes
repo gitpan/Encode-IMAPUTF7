@@ -1,5 +1,11 @@
 Revision history for Perl extension Encode::IMAPUTF7.
 
+1.03    2009-04-21
+    Version 1.02 introduced more bugs than it fixed:
+    - '&' was errounous encoded with '&_' instead of '&-'
+    - A '&' following characters to be encoded was stil base64 encoded instead
+      of being encoded as '&-'
+
 1.02    2009-04-20
     Code tidying
     Make encoding more compliant to the RFC (rt: #45050)
