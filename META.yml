@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Encode-IMAPUTF7
-version:             1.03
+version:             1.04
 abstract:            modification of UTF-7 encoding for IMAP
 license:             ~
 author:              

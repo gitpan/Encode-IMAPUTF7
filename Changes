@@ -1,5 +1,9 @@
 Revision history for Perl extension Encode::IMAPUTF7.
 
+1.04	2009-04-30
+    Revised the revision history
+    (see http://peter.makholm.net/2009/04/30/i-broke-encode-imaputf7/)
+
 1.03    2009-04-21
     Version 1.02 introduced more bugs than it fixed:
     - '&' was errounous encoded with '&_' instead of '&-'
@@ -8,8 +12,8 @@ Revision history for Perl extension Encode::IMAPUTF7.
 
 1.02    2009-04-20
     Code tidying
-    Make encoding more compliant to the RFC (rt: #45050)
-    - thanks to Nick Czeczulin
+    Make encoding more compliant to the RFC (rt: #<removed>)
+    - thanks to <name removed>
 
 1.01    2009-02-17
     Release as non-developers release
